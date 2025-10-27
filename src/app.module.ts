@@ -15,7 +15,7 @@ import { ConfigModule } from '@nestjs/config';
       url: process.env.DATABASE_URL,
       entities: [User],
       synchronize: process.env.NODE_ENV === 'development',
-      ssl: { ca: process.env.DB_CA_CERT },
+      ssl: process.env.DB_CA_CERT ? { ca: process.env.DB_CA_CERT } : false,
     }),
     AuthModule,
     UsersModule,
