@@ -12,7 +12,11 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      url: process.env.DATABASE_URL,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      database: process.env.DB_NAME,
       entities: [User],
       synchronize: process.env.NODE_ENV === 'development',
       ssl: process.env.DB_CA_CERT ? { ca: process.env.DB_CA_CERT } : false,
