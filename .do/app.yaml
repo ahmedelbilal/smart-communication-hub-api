@@ -1,0 +1,37 @@
+name: smart-communication-hub-api
+region: fra1
+
+services:
+  - name: api
+    github:
+      branch: main
+      deploy_on_push: true
+    dockerfile_path: ./Dockerfile
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    http_port: 3000
+    routes:
+      - path: /
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: '3000'
+      - key: DB_USERNAME
+        type: SECRET
+        scope: RUN_TIME
+      - key: DB_PASSWORD
+        type: SECRET
+        scope: RUN_TIME
+      - key: DB_NAME
+        type: SECRET
+        scope: RUN_TIME
+      - key: DB_PORT
+        type: SECRET
+        scope: RUN_TIME
+      - key: DB_HOST
+        type: SECRET
+        scope: RUN_TIME
+      - key: DB_CA_CERT
+        type: SECRET
+        scope: RUN_TIME
