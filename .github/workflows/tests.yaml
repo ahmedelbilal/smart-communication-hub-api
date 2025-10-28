@@ -32,4 +32,4 @@ jobs:
         run: pnpm run test --ci --coverage
 
       - name: Run e2e tests
-        run: pnpm run test:e2e -- --ci
+        run: pnpm run test:e2e --ci
