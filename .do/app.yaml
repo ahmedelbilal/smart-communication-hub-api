@@ -19,20 +19,14 @@ services:
       - key: PORT
         value: '3000'
       - key: DB_USERNAME
-        type: SECRET
         scope: RUN_TIME
       - key: DB_PASSWORD
-        type: SECRET
         scope: RUN_TIME
       - key: DB_NAME
-        type: SECRET
         scope: RUN_TIME
       - key: DB_PORT
-        type: SECRET
         scope: RUN_TIME
       - key: DB_HOST
-        type: SECRET
         scope: RUN_TIME
       - key: DB_CA_CERT
-        type: SECRET
         scope: RUN_TIME
