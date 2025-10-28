@@ -6,6 +6,7 @@ services:
     github:
       branch: main
       deploy_on_push: true
+      repo: ahmedelbilal/smart-communication-hub-api
     dockerfile_path: ./Dockerfile
     instance_size_slug: basic-xxs
     instance_count: 1
