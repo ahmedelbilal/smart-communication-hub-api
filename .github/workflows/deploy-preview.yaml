@@ -5,8 +5,6 @@ on:
     workflows: ['Run Tests']
     types:
       - completed
-  pull_request:
-    branches: [main]
 
 permissions:
   contents: read
