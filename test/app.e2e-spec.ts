@@ -52,9 +52,7 @@ describe('AuthModule (e2e)', () => {
         .send(testUser)
         .expect(201);
 
-      expect(res.body.user).toBeDefined();
-      expect(res.body.user.email).toBe(testUser.email);
-      expect(res.body.user.password).toBeUndefined();
+      expect(res.body.access_token).toBeDefined();
     });
 
     it('should not register with same email twice', async () => {

@@ -22,7 +22,7 @@ export class AuthController {
   @ApiResponse({ status: 409, description: 'Email already registered' })
   async register(@Body() dto: RegisterDto) {
     const user = await this.authService.register(dto.name, dto.email, dto.password);
-    return { user };
+    return this.authService.login(user);
   }
 
   @HttpCode(HttpStatus.OK)
