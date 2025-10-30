@@ -20,6 +20,23 @@ export class UsersService {
   }
 
   findById(id: string) {
-    return this.usersRepository.findOne({ where: { id } });
+    return this.usersRepository.findOne({
+      where: { id },
+      select: { id: true, name: true, email: true },
+    });
+  }
+
+  findAll(id: string, searchTerm?: string) {
+    let findOpts: FindOptionsWhere<User>[] = [{ id: Not(id) }];
+    if (searchTerm) {
+      findOpts = [
+        { id: Not(id), name: Like(searchTerm) },
+        { id: Not(id), email: Like(searchTerm) },
+      ];
+    }
+    return this.usersRepository.find({
+      select: { id: true, name: true },
+      where: findOpts,
+    });
   }
 }
