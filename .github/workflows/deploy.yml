@@ -1,0 +1,25 @@
+name: Deploy to Render
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      deployments: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Render
+        uses: JorgeLNJunior/render-deploy@v1.4.6
+        with:
+          service_id: ${{ secrets.RENDER_SERVICE_ID }}
+          api_key: ${{ secrets.RENDER_API_KEY }}
+          clear_cache: true               # optional, helps if you want clean builds
+          wait_deploy: true               # waits for deploy to finish before succeeding
+          github_deployment: true         # creates GitHub Deployment status
+          deployment_environment: 'production'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
