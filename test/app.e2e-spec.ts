@@ -42,7 +42,7 @@ describe('AuthModule (e2e)', () => {
   const testUser = {
     name: 'test',
     email: 'test@example.com',
-    password: 'Password123',
+    password: 'Password123@',
   };
 
   describe('POST /auth/register', () => {
