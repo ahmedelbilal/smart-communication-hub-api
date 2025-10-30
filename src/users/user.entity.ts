@@ -1,13 +1,13 @@
-import { Conversation } from 'src/conversations/conversation.entity';
-import { Message } from 'src/messages/message.entity';
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
   OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
+import { Conversation } from '../conversations/conversation.entity';
+import { Message } from '../messages/message.entity';
 
 @Entity('users')
 export class User {
