@@ -59,7 +59,10 @@ describe('UsersService', () => {
     it('should find a user by id', async () => {
       mockRepository.findOne.mockResolvedValueOnce(mockUser);
       const result = await service.findById('1');
-      expect(repo.findOne).toHaveBeenCalledWith({ where: { id: '1' } });
+      expect(repo.findOne).toHaveBeenCalledWith({
+        where: { id: '1' },
+        select: { id: true, name: true, email: true },
+      });
       expect(result).toEqual(mockUser);
     });
   });
