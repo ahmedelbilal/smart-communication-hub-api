@@ -1,13 +1,15 @@
 import {
+  CreateDateColumn,
   Entity,
-  PrimaryGeneratedColumn,
+  JoinColumn,
   ManyToOne,
   OneToMany,
-  CreateDateColumn,
-  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from '../users/user.entity';
+import { Insight } from '../insights/insight.entity';
 import { Message } from '../messages/message.entity';
+import { User } from '../users/user.entity';
 
 @Entity()
 export class Conversation {
@@ -24,6 +26,9 @@ export class Conversation {
 
   @OneToMany(() => Message, (message) => message.conversation)
   messages: Message[];
+
+  @OneToOne(() => Insight, (insight) => insight.conversation)
+  insight: Insight;
 
   @CreateDateColumn()
   createdAt: Date;
