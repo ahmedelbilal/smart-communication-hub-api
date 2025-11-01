@@ -33,8 +33,8 @@ export class ConversationsService {
       where: [{ user1: { id: userId } }, { user2: { id: userId } }],
       select: {
         id: true,
-        user1: { id: true, name: true },
-        user2: { id: true, name: true },
+        user1: { id: true, name: true, online: true },
+        user2: { id: true, name: true, online: true },
       },
       relations: ['user1', 'user2'],
       order: { createdAt: 'DESC' },
@@ -58,8 +58,8 @@ export class ConversationsService {
       ],
       select: {
         id: true,
-        user1: { id: true, name: true },
-        user2: { id: true, name: true },
+        user1: { id: true, name: true, online: true },
+        user2: { id: true, name: true, online: true },
         messages: { id: true, content: true, createdAt: true, sender: { id: true, name: true } },
       },
       relations: { user1: true, user2: true, messages: { sender: true } },

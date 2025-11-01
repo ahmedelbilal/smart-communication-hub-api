@@ -22,7 +22,7 @@ export class MessagesService {
       select: {
         id: true,
         content: true,
-        sender: { id: true, name: true },
+        sender: { id: true, name: true, online: true },
         conversation: { id: true },
         createdAt: true,
       },
