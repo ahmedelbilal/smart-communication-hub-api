@@ -32,6 +32,9 @@ export class User {
   @OneToMany(() => Message, (message) => message.sender)
   messages: Message[];
 
+  @Column({ default: false })
+  online: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 
