@@ -1,13 +1,8 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import { join } from 'path';
 import { DataSource } from 'typeorm';
 
 import * as dotenv from 'dotenv';
 dotenv.config();
-
-const certPath = path.resolve(__dirname, 'certs/ca-certificate.crt');
-const ca = fs.readFileSync(certPath).toString();
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -20,5 +15,4 @@ export const AppDataSource = new DataSource({
   migrations: [join(__dirname, 'src/migrations/*{.ts,.js}')],
   synchronize: false,
   logging: true,
-  ssl: { ca },
 });
