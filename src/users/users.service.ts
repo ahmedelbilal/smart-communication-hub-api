@@ -57,4 +57,21 @@ export class UsersService {
 
     return await qb.getMany();
   }
+
+  async updateUserById(id: string, updatedData: Partial<User>) {
+    return this.usersRepository.update({ id }, updatedData);
+  }
+
+  //only return users who i have a conversation with
+  async getOnlineUsers(userId: string) {
+    return this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.conversationsInitiated', 'initiated', 'initiated.user2 = :userId', { userId })
+      .leftJoin('user.conversationsReceived', 'received', 'received.user1 = :userId', { userId })
+      .where('user.id != :userId', { userId })
+      .andWhere('user.online = true')
+      .andWhere('(initiated.id IS NOT NULL OR received.id IS NOT NULL)')
+      .select(['user.id', 'user.name'])
+      .getMany();
+  }
 }
