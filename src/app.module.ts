@@ -10,6 +10,8 @@ import { MessagesModule } from './messages/messages.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { Message } from './messages/message.entity';
 import { Conversation } from './conversations/conversation.entity';
+import { InsightsModule } from './insights/insights.module';
+import { Insight } from './insights/insight.entity';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { Conversation } from './conversations/conversation.entity';
       host: process.env.DB_HOST,
       port: Number(process.env.DB_PORT),
       database: process.env.DB_NAME,
-      entities: [User, Message, Conversation],
+      entities: [User, Message, Conversation, Insight],
       synchronize: process.env.NODE_ENV === 'development',
       ssl: process.env.DB_CA_CERT ? { ca: process.env.DB_CA_CERT } : false,
     }),
@@ -29,6 +31,7 @@ import { Conversation } from './conversations/conversation.entity';
     UsersModule,
     MessagesModule,
     ConversationsModule,
+    InsightsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

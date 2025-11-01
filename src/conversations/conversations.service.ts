@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Conversation } from './conversation.entity';
 import { User } from '../users/user.entity';
 import { Message } from 'src/messages/message.entity';
+import { Insight } from 'src/insights/insight.entity';
 
 @Injectable()
 export class ConversationsService {
@@ -37,7 +38,7 @@ export class ConversationsService {
         user2: { id: true, name: true, online: true },
       },
       relations: ['user1', 'user2'],
-      order: { createdAt: 'DESC' },
+      order: { messages: { createdAt: 'DESC' } },
     });
 
     //only send other user data
@@ -50,7 +51,7 @@ export class ConversationsService {
   async findById(
     id: string,
     userId: string
-  ): Promise<{ id: string; user: User; messages: Message[] }> {
+  ): Promise<{ id: string; user: User; messages: Message[]; insight: Insight }> {
     const conversation = await this.conversationsRepo.findOne({
       where: [
         { id, user1: { id: userId } },
@@ -61,8 +62,9 @@ export class ConversationsService {
         user1: { id: true, name: true, online: true },
         user2: { id: true, name: true, online: true },
         messages: { id: true, content: true, createdAt: true, sender: { id: true, name: true } },
+        insight: { id: true, summary: true },
       },
-      relations: { user1: true, user2: true, messages: { sender: true } },
+      relations: { user1: true, user2: true, messages: { sender: true }, insight: true },
     });
 
     //only send other user data
@@ -70,6 +72,7 @@ export class ConversationsService {
       id: conversation.id,
       user: userId === conversation.user1.id ? conversation.user2 : conversation.user1,
       messages: conversation.messages,
+      insight: conversation.insight,
     };
   }
 }
