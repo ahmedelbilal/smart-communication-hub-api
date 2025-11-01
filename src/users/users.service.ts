@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, Like, Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from './user.entity';
 
 @Injectable()
@@ -26,17 +26,35 @@ export class UsersService {
     });
   }
 
-  findAll(id: string, searchTerm?: string) {
-    let findOpts: FindOptionsWhere<User>[] = [{ id: Not(id) }];
+  async findAll(id: string, searchTerm?: string) {
+    const qb = this.usersRepository.createQueryBuilder('user');
+
+    // Exclude current user
+    qb.where('user.id != :id', { id });
+
+    // Optional search filter
     if (searchTerm) {
-      findOpts = [
-        { id: Not(id), name: Like(searchTerm) },
-        { id: Not(id), email: Like(searchTerm) },
-      ];
+      qb.andWhere('(user.name ILIKE :search OR user.email ILIKE :search)', {
+        search: `%${searchTerm}%`,
+      });
     }
-    return this.usersRepository.find({
-      select: { id: true, name: true },
-      where: findOpts,
-    });
+
+    // Exclude users who already have a conversation with this user
+    qb.andWhere(
+      `
+    user.id NOT IN (
+      SELECT 
+        CASE
+          WHEN c.user1_Id = :id THEN c.user2_Id
+          ELSE c.user1_Id
+        END
+      FROM conversation c
+      WHERE c.user1_Id = :id OR c.user2_Id = :id
+    )
+  `,
+      { id }
+    );
+
+    return await qb.getMany();
   }
 }

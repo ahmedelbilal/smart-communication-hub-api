@@ -14,7 +14,19 @@ export class MessagesService {
 
   async create(conversation: Conversation, sender: User, content: string): Promise<Message> {
     const message = this.messagesRepo.create({ conversation, sender, content });
-    return this.messagesRepo.save(message);
+    const savedMessage = await this.messagesRepo.save(message);
+
+    return this.messagesRepo.findOne({
+      where: { id: savedMessage.id },
+      relations: ['sender', 'conversation'],
+      select: {
+        id: true,
+        content: true,
+        sender: { id: true, name: true },
+        conversation: { id: true },
+        createdAt: true,
+      },
+    });
   }
 
   async getMessages(conversationId: string): Promise<Message[]> {
