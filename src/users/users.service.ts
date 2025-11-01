@@ -29,6 +29,8 @@ export class UsersService {
   async findAll(id: string, searchTerm?: string) {
     const qb = this.usersRepository.createQueryBuilder('user');
 
+    qb.select(['user.id', 'user.name']);
+
     // Exclude current user
     qb.where('user.id != :id', { id });
 
