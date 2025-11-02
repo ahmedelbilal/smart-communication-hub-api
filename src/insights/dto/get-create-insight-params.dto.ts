@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsUUID } from 'class-validator';
 
-export class GetConversationParamsDto {
+export class GetCreateInsightParamsDto {
   @ApiProperty()
   @IsUUID()
-  id: string;
+  conversationId: string;
 }

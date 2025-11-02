@@ -10,9 +10,11 @@ import {
 import { Insight } from '../insights/insight.entity';
 import { Message } from '../messages/message.entity';
 import { User } from '../users/user.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Conversation {
+  @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -24,12 +26,15 @@ export class Conversation {
   @JoinColumn({ name: 'user2_id' })
   user2: User;
 
+  @ApiProperty({ type: [Message] })
   @OneToMany(() => Message, (message) => message.conversation)
   messages: Message[];
 
+  @ApiProperty({ type: Insight })
   @OneToOne(() => Insight, (insight) => insight.conversation)
   insight: Insight;
 
+  @ApiProperty()
   @CreateDateColumn()
   createdAt: Date;
 }
