@@ -60,7 +60,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(client: Socket) {
-    const userId = client.data.user.id;
+    const userId = client.data.user?.id;
     if (!userId) return;
 
     this.onlineUsers.delete(userId);
