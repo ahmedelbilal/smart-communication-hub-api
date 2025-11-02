@@ -1,51 +1,139 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Smart Communication Hub Documentation
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Overview
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This repository contains the **backend** for the CodeQuests challenge.
+It’s built using **NestJS** and provides all necessary APIs and database integrations for the application.
 
-## Description
+The backend can be run either using **Docker** (recommended for development) or locally by connecting to an external PostgreSQL database.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Environment Variables
 
-## Installation
+All environment-specific values are stored in a `.env` file.
+
+### ⚠️ Important:
+
+Before starting the app, **you must create a `.env` file** at the project root.
+
+To make setup easy, there’s a `.env.example` file.
+Duplicate it and rename the copy to `.env`:
 
 ```bash
-$ pnpm install
+cp .env.example .env
 ```
 
-## Running the app
+Then, fill in your configuration details:
+
+```env
+NODE_ENV="development"
+
+# Database Configuration
+DB_CA_CERT="optional"
+DB_USERNAME=nest_user
+DB_PASSWORD=nest_pass
+DB_NAME=nest_db
+DB_PORT=5432
+DB_HOST=db
+
+# JWT Configuration
+JWT_SECRET="some_secret"
+JWT_EXPIRES_IN=360000 # in milliseconds
+
+# Bcrypt Configuration
+BCRYPT_SALT_ROUNDS=10
+
+## Openai Configuration
+OPENAI_API_KEY="key"
+```
+
+## Running the Project
+
+You can run the backend in two different ways:
+
+---
+
+### Option 1: Using Docker (Recommended for Development)
+
+This is the easiest way since it automatically sets up PostgreSQL and the backend together.
+
+#### 1️ Build and start containers:
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+docker-compose up --build
 ```
 
-## Test
+#### 2️ Access the app:
+
+- API: [http://localhost:3000](http://localhost:3000)
+- PostgreSQL: accessible on port **5432**
+
+To stop the containers:
+
+```bash
+docker-compose down
+```
+
+---
+
+### Option 2: Run Without Docker
+
+If you already have a PostgreSQL instance running, you can connect to it directly.
+
+#### 1️ Configure `.env`:
+
+Make sure your `.env` has the correct external database credentials.
+
+#### 2️ Install dependencies:
+
+```bash
+pnpm install
+```
+
+#### 3️ Run database migrations (Only for production):
+
+```bash
+pnpm run migration:run
+```
+
+#### 4️ Start the application:
+
+```bash
+pnpm start:dev
+```
+
+The backend will run on:
+
+```
+http://localhost:3000
+```
+
+## API Documentation
+
+Once the backend is running, you can explore the API using the built-in Swagger documentation available at:
+
+**[http://localhost:3000/api/docs](http://localhost:3000/api/docs)**
+
+This page provides a complete overview of all available endpoints, request/response formats, and example payloads.
+It’s automatically generated from the NestJS decorators and updates whenever you modify your controllers.
+
+---
+
+### AI-Powered Insights
+
+The application includes an AI Insights feature that automatically generates concise summaries of user conversations using OpenAI’s GPT model.
+
+#### How It Works
+
+- The service retrieves a conversation and its messages from the database.
+- It then sends the full conversation text to the OpenAI API.
+- The AI model (gpt-4o-mini) summarizes the discussion in a neutral and concise tone.
+- The generated summary is saved as an Insight entity and linked to the conversation for later retrieval.
+
+#### ⚠️ Important:
+
+`Insights are only created once for the conversation by one of the users`
+
+## Running Tests
 
 ```bash
 # unit tests
@@ -58,16 +146,80 @@ $ pnpm run test:e2e
 $ pnpm run test:cov
 ```
 
-## Support
+## Deployment (Render + GitHub Actions)
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+The project uses **GitHub Actions** to automatically deploy to **Render.com** whenever code is pushed to the `main` branch.
 
-## Stay in touch
+### GitHub Action Workflow
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Located in `.github/workflows/deploy.yml` the workflow contains:
+
+```yaml
+name: Deploy to Render
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      deployments: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Render
+        uses: JorgeLNJunior/render-deploy@v1.4.6
+        with:
+          service_id: ${{ secrets.RENDER_SERVICE_ID }}
+          api_key: ${{ secrets.RENDER_API_KEY }}
+          clear_cache: true
+          wait_deploy: true
+          github_deployment: true
+          deployment_environment: 'production'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+### GitHub Secrets
+
+These secrets are required for deployment to Render:
+
+| Secret Name         | Description                                                  |
+| ------------------- | ------------------------------------------------------------ |
+| `RENDER_SERVICE_ID` | The unique ID of your Render service                         |
+| `RENDER_API_KEY`    | The API key for Render (for authentication)                  |
+| `GITHUB_TOKEN`      | Automatically provided by GitHub for workflow authentication |
+
+Once configured, every push to `main` will trigger a deployment to Render.
+
+---
+
+## Tech Stack
+
+- **Framework:** [NestJS](https://nestjs.com/)
+- **Socket:** Socket.io
+- **Database:** PostgreSQL
+- **ORM:** TypeORM
+- **Containerization:** Docker
+- **Package Manager:** pnpm
+- **Testing:** Jest
+
+---
+
+## Useful Scripts
+
+| Command           | Description                          |
+| ----------------- | ------------------------------------ |
+| `pnpm start:dev`  | Run the app in development mode      |
+| `pnpm build`      | Compile the TypeScript project       |
+| `pnpm start:prod` | Run the built app in production mode |
+| `pnpm test`       | Run tests                            |
+| `pnpm lint`       | Run linter                           |
+
+---
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
