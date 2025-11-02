@@ -1,19 +1,19 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { MessagesService } from './messages.service';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Message } from './message.entity';
+import { ApiBearerAuth, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { GetMessagesParamsDto } from './dto/get-messages-params.dto';
+import { Message } from './message.entity';
+import { MessagesService } from './messages.service';
 
 @ApiTags('Messages')
 @ApiBearerAuth()
-@ApiResponse({ status: 401, description: 'Unauthorized' })
+@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @Controller('messages')
 @UseGuards(AuthGuard('jwt'))
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
-  @ApiResponse({ status: 200, type: [Message] })
+  @ApiOkResponse({ type: [Message] })
   @Get(':conversationId')
   async getMessages(@Param() { conversationId }: GetMessagesParamsDto) {
     return this.messagesService.getMessages(conversationId);

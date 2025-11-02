@@ -1,25 +1,26 @@
-import { Controller, Get, Post, Param, UseGuards } from '@nestjs/common';
-import { InsightsService } from './insights.service';
+import { Controller, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Insight } from './insight.entity';
+import { ApiBearerAuth, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { GetCreateInsightParamsDto } from './dto/get-create-insight-params.dto';
+import { Insight } from './insight.entity';
+import { InsightsService } from './insights.service';
 
 @ApiTags('Insights')
 @ApiBearerAuth()
-@ApiResponse({ status: 401, description: 'Unauthorized' })
+@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @Controller('insights')
 @UseGuards(AuthGuard('jwt'))
 export class InsightsController {
   constructor(private readonly insightsService: InsightsService) {}
 
-  @ApiResponse({ status: 200, type: Insight })
+  @ApiOkResponse({ type: Insight })
   @Get(':conversationId')
   async getInsight(@Param() { conversationId }: GetCreateInsightParamsDto) {
     return this.insightsService.getInsight(conversationId);
   }
 
-  @ApiResponse({ status: 201, type: Insight })
+  @ApiOkResponse({ type: Insight })
+  @HttpCode(HttpStatus.OK)
   @Post(':conversationId')
   async generateInsight(@Param() { conversationId }: GetCreateInsightParamsDto) {
     return this.insightsService.generateInsight(conversationId);
