@@ -275,6 +275,14 @@ Once configured, every push to `main` will trigger a deployment to Render.
 
 ---
 
+## Live Application
+
+The Frontend is deployed and actively running at:
+https://smart-communication-hub.ahmedelbilal.com
+
+The backend is deployed and actively running at:
+https://api.smart-communication-hub.ahmedelbilal.com/api/docs
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
