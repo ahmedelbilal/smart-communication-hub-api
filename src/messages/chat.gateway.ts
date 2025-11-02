@@ -1,18 +1,18 @@
+import { Logger, UnauthorizedException } from '@nestjs/common';
 import {
-  WebSocketGateway,
-  WebSocketServer,
-  SubscribeMessage,
-  MessageBody,
   ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { MessagesService } from './messages.service';
-import { ConversationsService } from '../conversations/conversations.service';
-import { UnauthorizedException, Logger } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
+import { ConversationsService } from '../conversations/conversations.service';
+import { MessagesService } from './messages.service';
 
 @WebSocketGateway({ cors: true })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -21,8 +21,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private readonly logger = new Logger(ChatGateway.name);
 
-  // userId -> socketId
-  private onlineUsers = new Map<string, string>();
+  // userId -> socketsIds
+  private onlineUsers = new Map<string, Set<string>>();
 
   constructor(
     private readonly messagesService: MessagesService,
@@ -40,12 +40,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const payload = await this.authService.verifyToken(token);
       const userId = payload.sub || payload.id;
 
-      this.onlineUsers.set(userId, client.id);
+      const userSockets = this.onlineUsers.get(userId) || new Set();
+      userSockets.add(client.id);
+
+      this.onlineUsers.set(userId, userSockets);
       client.data.user = { id: userId };
 
       await this.usersService.updateUserById(userId, { online: true });
       (await this.usersService.getOnlineUsers(userId)).forEach(({ id }) => {
-        this.server.to(this.onlineUsers.get(id)).emit('user_joined', { id: userId });
+        if (this.onlineUsers.has(id))
+          this.server.to(Array.from(this.onlineUsers.get(id))).emit('user_joined', { id: userId });
       });
 
       this.logger.log(`User ${userId} connected`);
@@ -56,17 +60,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(client: Socket) {
-    const userId = [...this.onlineUsers.entries()].find(
-      ([, socketId]) => socketId === client.id
-    )?.[0];
-    if (userId) {
-      this.onlineUsers.delete(userId);
-      this.logger.log(`User ${userId} disconnected`);
-    }
+    const userId = client.data.user.id;
+    if (!userId) return;
+
+    this.onlineUsers.delete(userId);
+    this.logger.log(`User ${userId} disconnected`);
 
     await this.usersService.updateUserById(userId, { online: false });
     (await this.usersService.getOnlineUsers(userId)).forEach(({ id }) => {
-      this.server.to(this.onlineUsers.get(id)).emit('user_left', { id: userId });
+      if (this.onlineUsers.has(id))
+        this.server.to(Array.from(this.onlineUsers.get(id))).emit('user_left', { id: userId });
     });
   }
 
@@ -91,14 +94,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       content
     );
 
-    client.emit('message_sent', message);
+    if (this.onlineUsers.has(senderId)) {
+      const senderSockets = this.onlineUsers.get(senderId);
+      this.server.to(Array.from(senderSockets)).emit('message_sent', message);
+    }
 
-    const receiverSocketId = this.onlineUsers.get(receiverId);
-    if (receiverSocketId) {
-      this.server.to(receiverSocketId).emit('new_message', message);
-      this.logger.log(`Message sent from ${senderId} to ${receiverId}`);
-    } else {
-      this.logger.log(`Receiver ${receiverId} is offline`);
+    if (this.onlineUsers.has(receiverId)) {
+      const receiverSockets = this.onlineUsers.get(receiverId);
+      this.server.to(Array.from(receiverSockets)).emit('new_message', message);
     }
 
     return message;
