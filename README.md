@@ -25,10 +25,12 @@ cp .env.example .env
 Then, fill in your configuration details:
 
 ```env
+# App configuration
 NODE_ENV="development"
+PORT=3000
 
 # Database Configuration
-DB_CA_CERT="optional"
+DB_CA_CERT="" # don't add it unless you need it
 DB_USERNAME=nest_user
 DB_PASSWORD=nest_pass
 DB_NAME=nest_db
@@ -37,13 +39,22 @@ DB_HOST=db
 
 # JWT Configuration
 JWT_SECRET="some_secret"
-JWT_EXPIRES_IN=360000 # in milliseconds
+JWT_EXPIRES_IN="1h"
 
 # Bcrypt Configuration
 BCRYPT_SALT_ROUNDS=10
 
-## Openai Configuration
-OPENAI_API_KEY="key"
+# Openai Configuration
+OPENAI_API_KEY=your_openai_key_here
+OPENAI_MODEL=gpt-4o-mini
+OPENAI_TEMPERATURE=0.7
+
+# Cors Configuration
+CORS_ORIGINS="http://localhost:3000,https://your-site.com" # separate origins with ','
+
+# Ratelimiter
+THROTTLER_TTL=60
+THROTTLER_LIMIT=10
 ```
 
 ## Running the Project
