@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { ConversationsService } from './conversations.service';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/users/user.entity';
 import { Request } from 'express';
@@ -23,6 +23,7 @@ export class ConversationsController {
   }
 
   @ApiResponse({ status: 200, type: Conversation })
+  @ApiNotFoundResponse({ description: 'Conversation Notfound' })
   @Get(':id')
   async getConversationById(@Param() params: GetConversationParamsDto, @Req() req: Request) {
     const user = req.user as User;

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Conversation } from './conversation.entity';
@@ -66,6 +66,8 @@ export class ConversationsService {
       },
       relations: { user1: true, user2: true, messages: { sender: true }, insight: true },
     });
+
+    if (!conversation) throw new NotFoundException('Conversation not found');
 
     //only send other user data
     return {
