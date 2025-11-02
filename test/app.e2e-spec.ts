@@ -9,6 +9,7 @@ import { Insight } from '../src/insights/insight.entity';
 import { Message } from '../src/messages/message.entity';
 import { User } from '../src/users/user.entity';
 import { UsersModule } from '../src/users/users.module';
+import { CoreModule } from '../src/core/core.module';
 
 describe('AuthModule (e2e)', () => {
   let app: INestApplication;
@@ -25,6 +26,7 @@ describe('AuthModule (e2e)', () => {
         }),
         UsersModule,
         AuthModule,
+        CoreModule,
       ],
     }).compile();
 
