@@ -4,6 +4,8 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ConflictException } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import bcryptConfig from '../core/config/bcrypt.config';
 
 jest.mock('bcrypt');
 
@@ -29,6 +31,11 @@ describe('AuthService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          load: [bcryptConfig],
+        }),
+      ],
       providers: [
         AuthService,
         { provide: UsersService, useValue: mockUsersService },

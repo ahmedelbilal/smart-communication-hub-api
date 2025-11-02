@@ -1,24 +1,24 @@
-import { Injectable, ConflictException } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import bcryptConfig from '../core/config/bcrypt.config';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    @Inject(bcryptConfig.KEY)
+    private readonly bcryptConf: ConfigType<typeof bcryptConfig>
   ) {}
-
-  private getSaltRounds(): number {
-    return Number(process.env.BCRYPT_SALT_ROUNDS ?? 10);
-  }
 
   async register(name: string, email: string, password: string) {
     const existing = await this.usersService.findByEmail(email);
     if (existing) throw new ConflictException('Email already registered');
 
-    const saltRounds = this.getSaltRounds();
+    const saltRounds = this.bcryptConf.saltRounds;
     const hashed = await bcrypt.hash(password, saltRounds);
 
     const user = await this.usersService.createPartial(name, email, hashed);

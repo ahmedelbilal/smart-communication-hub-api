@@ -1,21 +1,30 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Insight } from './insight.entity';
 import { Conversation } from '../conversations/conversation.entity';
 import OpenAI from 'openai';
+import openaiConfig from '../core/config/openai.config';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class InsightsService {
-  private openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  private readonly openai: OpenAI;
 
   constructor(
     @InjectRepository(Insight)
     private insightsRepo: Repository<Insight>,
 
     @InjectRepository(Conversation)
-    private conversationsRepo: Repository<Conversation>
-  ) {}
+    private conversationsRepo: Repository<Conversation>,
+
+    @Inject(openaiConfig.KEY)
+    private readonly openaiConf: ConfigType<typeof openaiConfig>
+  ) {
+    this.openai = new OpenAI({
+      apiKey: this.openaiConf.apiKey,
+    });
+  }
 
   async generateInsight(conversationId: string): Promise<Insight> {
     let insight = await this.insightsRepo.findOne({
@@ -39,7 +48,8 @@ export class InsightsService {
       .join('\n');
 
     const completion = await this.openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: this.openaiConf.model,
+      temperature: this.openaiConf.temperature,
       messages: [
         {
           role: 'system',
