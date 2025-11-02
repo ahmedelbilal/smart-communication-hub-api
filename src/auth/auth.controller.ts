@@ -6,7 +6,7 @@ import {
   Post,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -18,7 +18,7 @@ export class AuthController {
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user and get a JWT token' })
-  @ApiResponse({ status: 200, description: 'Register successful, returns access_token' })
+  @ApiOkResponse({ description: 'Register successful, returns access_token' })
   @ApiResponse({ status: 409, description: 'Email already registered' })
   async register(@Body() dto: RegisterDto) {
     const user = await this.authService.register(dto.name, dto.email, dto.password);
@@ -28,7 +28,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @ApiOperation({ summary: 'Login and get a JWT token' })
-  @ApiResponse({ status: 200, description: 'Login successful, returns access_token' })
+  @ApiOkResponse({ description: 'Login successful, returns access_token' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(@Body() dto: LoginDto) {
     const user = await this.authService.validateUser(dto.email, dto.password);

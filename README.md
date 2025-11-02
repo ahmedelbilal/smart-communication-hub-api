@@ -133,6 +133,50 @@ The application includes an AI Insights feature that automatically generates con
 
 `Insights are only created once for the conversation by one of the users`
 
+## Real-Time Chat (WebSocket Gateway)
+
+The backend includes a real-time chat system built with **NestJS WebSockets (Socket.IO)**.
+It allows users to send and receive messages instantly while keeping track of online status.
+
+### How It Works
+
+- The `ChatGateway` class manages socket connections and message delivery.
+- When a user connects:
+  - Their authentication token is verified using `AuthService`.
+  - The user is marked **online** in the database.
+  - Other connected users are notified via the `user_joined` event.
+
+- When a user disconnects:
+  - Their status is set to **offline**.
+  - Other users are notified via the `user_left` event.
+
+- Messages are handled in real time through the `send_message` event:
+  - A conversation is found or created between the sender and receiver.
+  - The new message is saved to the database.
+  - Both users receive live updates (`message_sent` for sender, `new_message` for receiver).
+
+### Events Overview
+
+| Event          | Direction       | Description                            |
+| -------------- | --------------- | -------------------------------------- |
+| `user_joined`  | Server → Client | Fired when a user comes online         |
+| `user_left`    | Server → Client | Fired when a user disconnects          |
+| `send_message` | Client → Server | Sent by a user to deliver a message    |
+| `message_sent` | Server → Client | Confirms that a message was sent       |
+| `new_message`  | Server → Client | Delivers a new message to the receiver |
+
+### Authentication
+
+Each WebSocket connection must include a valid JWT token:
+
+```js
+const socket = io('http://localhost:3000', {
+  auth: { token: 'your_jwt_token' },
+});
+```
+
+If the token is missing or invalid, the connection will be rejected.
+
 ## Running Tests
 
 ```bash
