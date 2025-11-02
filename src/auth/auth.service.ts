@@ -2,7 +2,7 @@ import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import bcryptConfig from 'src/core/config/bcrypt.config';
+import bcryptConfig from '../core/config/bcrypt.config';
 import { UsersService } from '../users/users.service';
 
 @Injectable()

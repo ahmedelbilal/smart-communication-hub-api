@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Insight } from './insight.entity';
 import { Conversation } from '../conversations/conversation.entity';
 import OpenAI from 'openai';
-import openaiConfig from 'src/core/config/openai.config';
+import openaiConfig from '../core/config/openai.config';
 import { ConfigType } from '@nestjs/config';
 
 @Injectable()
