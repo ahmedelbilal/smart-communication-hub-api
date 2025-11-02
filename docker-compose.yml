@@ -23,7 +23,7 @@ services:
     container_name: smart_communication_hub_api
     restart: always
     ports:
-      - '3000:3000'
+      - ${PORT}:${PORT}
     volumes:
       - .:/app
       - /app/node_modules
